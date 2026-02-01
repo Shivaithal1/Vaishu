@@ -59,7 +59,7 @@ button {
 #yes {
     position: absolute;
     top: 55%;
-    left: 34%;
+    left: 40%;
     transform: translate(-50%, -50%);
     background: #ff2e63;
     color: white;
@@ -68,10 +68,26 @@ button {
 #no {
     position: absolute;
     top: 55%;
-    left: 66%;
+    left: 60%;
     transform: translate(-50%, -50%);
     background: #444;
     color: white;
+}
+
+/* ---------- MOBILE FIX: PREVENT OVERLAP ---------- */
+@media (max-width: 600px) {
+    #yes {
+        left: 35%;
+    }
+
+    #no {
+        left: 65%;
+    }
+
+    button {
+        padding: 18px 40px;
+        font-size: 1.4rem;
+    }
 }
 
 /* Video overlay */
@@ -121,7 +137,7 @@ video {
 <button id="no">NO</button>
 
 <div id="videoContainer">
-    <video id="valentineVideo" controls autoplay>
+    <video id="valentineVideo" controls autoplay playsinline>
         <source src="Vaishu.mp4" type="video/mp4">
     </video>
 </div>
@@ -164,8 +180,8 @@ function changeBackground() {
 let bgInterval;
 setTimeout(() => {
     changeBackground();
-    bgInterval = setInterval(changeBackground, 2500);
-}, 2500);
+    bgInterval = setInterval(changeBackground, 4000);
+}, 4000);
 
 /* ---------- NO BUTTON TELEPORT ---------- */
 const noBtn = document.getElementById("no");
@@ -227,5 +243,3 @@ yesBtn.addEventListener("click", () => {
 
 </body>
 </html>
-
-
