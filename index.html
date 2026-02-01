@@ -22,6 +22,7 @@ body {
     z-index: 0;
 }
 
+/* Dark overlay */
 #overlay {
     position: fixed;
     inset: 0;
@@ -54,7 +55,7 @@ button {
 #yes {
     position: absolute;
     top: 55%;
-    left: 45%;
+    left: 40%;
     transform: translate(-50%, -50%);
     background: #ff2e63;
     color: white;
@@ -63,13 +64,13 @@ button {
 #no {
     position: absolute;
     top: 55%;
-    left: 55%;
+    left: 60%;
     transform: translate(-50%, -50%);
     background: #444;
     color: white;
 }
 
-/* Video overlay – HIDDEN BY DEFAULT */
+/* Video overlay */
 #videoContainer {
     display: none;
     position: fixed;
@@ -77,7 +78,7 @@ button {
     background: black;
     justify-content: center;
     align-items: center;
-    z-index: 10;
+    z-index: 4;
 }
 
 video {
@@ -86,13 +87,13 @@ video {
     border-radius: 20px;
 }
 
-/* Falling emojis */
+/* Falling hearts & roses */
 .fall {
     position: fixed;
     top: -50px;
     animation: fall linear forwards;
     pointer-events: none;
-    z-index: 20;
+    z-index: 5;
 }
 
 @keyframes fall {
@@ -109,84 +110,101 @@ video {
 <div id="bg"></div>
 <div id="overlay"></div>
 
-<h1 id="question">Will you be my Valentine? 💘</h1>
+<h1 id="question">Vaishuuu....Will you be my Valentine? 💘</h1>
 
 <button id="yes">YES</button>
 <button id="no">NO</button>
 
 <div id="videoContainer">
-    <video id="valentineVideo" controls>
+    <video id="valentineVideo" controls autoplay>
         <source src="Vaishu.mp4" type="video/mp4">
     </video>
 </div>
 
 <script>
-/* -------- BACKGROUND SLIDESHOW -------- */
+/* ---------- BACKGROUND SLIDESHOW ---------- */
 const backgrounds = [
-  "bg1.jpeg","bg2.jpeg","bg3.jpeg","bg4.jpeg","bg5.jpeg",
-  "bg6.jpeg","bg7.jpeg","bg8.jpeg","bg9.jpeg","bg10.jpeg","bg11.jpeg"
+    "bg1.jpeg","bg2.jpeg","bg3.jpeg","bg4.jpeg","bg5.jpeg",
+    "bg6.jpeg","bg7.jpeg","bg8.jpeg","bg9.jpeg","bg10.jpeg","bg11.jpeg"
 ];
+
+// random order
+backgrounds.sort(() => Math.random() - 0.5);
 
 let bgIndex = 0;
 const bg = document.getElementById("bg");
 
-function changeBg() {
-  bg.style.opacity = 0;
-  setTimeout(() => {
-    bg.style.backgroundImage = `url(${backgrounds[bgIndex]})`;
-    bg.style.opacity = 1;
-    bgIndex = (bgIndex + 1) % backgrounds.length;
-  }, 800);
+function changeBackground() {
+    bg.style.opacity = 0;
+    setTimeout(() => {
+        bg.style.backgroundImage = `url(${backgrounds[bgIndex]})`;
+        bg.style.opacity = 1;
+        bgIndex = (bgIndex + 1) % backgrounds.length;
+    }, 800);
 }
 
 bg.style.backgroundImage = `url(${backgrounds[0]})`;
-setInterval(changeBg, 6000);
+bg.style.opacity = 1;
 
-/* -------- NO BUTTON -------- */
+const bgInterval = setInterval(changeBackground, 1000);
+
+/* ---------- NO BUTTON TELEPORT ---------- */
 const noBtn = document.getElementById("no");
-let activated = false;
+const yesBtn = document.getElementById("yes");
+const question = document.getElementById("question");
+const videoContainer = document.getElementById("videoContainer");
+const video = document.getElementById("valentineVideo");
 
-function moveNo() {
-  const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-  const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-  noBtn.style.left = x + "px";
-  noBtn.style.top = y + "px";
-  noBtn.style.transform = "none";
+let teleportActivated = false;
+
+function teleportNo() {
+    const pad = 20;
+    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - pad);
+    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - pad);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+    noBtn.style.transform = "none";
 }
 
-["mouseenter","touchstart"].forEach(e =>
-  noBtn.addEventListener(e, () => {
-    activated = true;
-    moveNo();
-  }, { once:true })
-);
+/* Activate teleport on first try */
+["mouseenter","touchstart"].forEach(evt => {
+    noBtn.addEventListener(evt, () => {
+        teleportActivated = true;
+        teleportNo();
+    }, { once: true });
+});
 
-["mouseenter","mousedown","touchstart"].forEach(e =>
-  noBtn.addEventListener(e, () => activated && moveNo())
-);
+/* Infinite teleport */
+["mouseenter","mousedown","touchstart"].forEach(evt => {
+    noBtn.addEventListener(evt, () => {
+        if (teleportActivated) teleportNo();
+    });
+});
 
-/* -------- CELEBRATION -------- */
-function celebrate() {
-  const el = document.createElement("div");
-  el.className = "fall";
-  el.innerText = Math.random() > 0.5 ? "💖" : "🌹";
-  el.style.left = Math.random() * window.innerWidth + "px";
-  el.style.fontSize = (20 + Math.random()*30) + "px";
-  el.style.animationDuration = (3 + Math.random()*3) + "s";
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 6000);
+/* ---------- CELEBRATION ---------- */
+function createCelebration() {
+    const el = document.createElement("div");
+    el.className = "fall";
+    el.innerText = Math.random() > 0.5 ? "💖" : "🌹";
+    el.style.left = Math.random() * window.innerWidth + "px";
+    el.style.fontSize = (20 + Math.random() * 30) + "px";
+    el.style.animationDuration = (3 + Math.random() * 3) + "s";
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 6000);
 }
 
-/* -------- YES CLICK -------- */
-document.getElementById("yes").addEventListener("click", () => {
-  document.getElementById("question").style.display = "none";
-  document.getElementById("yes").style.display = "none";
-  document.getElementById("no").style.display = "none";
+/* ---------- YES CLICK ---------- */
+yesBtn.addEventListener("click", () => {
+    clearInterval(bgInterval);
 
-  document.getElementById("videoContainer").style.display = "flex";
-  document.getElementById("valentineVideo").play();
+    question.style.display = "none";
+    yesBtn.style.display = "none";
+    noBtn.style.display = "none";
 
-  setInterval(celebrate, 150);
+    videoContainer.style.display = "flex";
+    video.play();
+
+    setInterval(createCelebration, 150);
 });
 </script>
 
