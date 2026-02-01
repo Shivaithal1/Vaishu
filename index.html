@@ -12,14 +12,18 @@ body {
     overflow: hidden;
 }
 
-/* Background slideshow */
-#bg {
+/* ---------- BACKGROUND CROSSFADE ---------- */
+#bg, #bg2 {
     position: fixed;
     inset: 0;
     background-size: cover;
     background-position: center;
     transition: opacity 1.5s ease-in-out;
     z-index: 0;
+}
+
+#bg2 {
+    opacity: 0;
 }
 
 /* Dark overlay */
@@ -55,7 +59,7 @@ button {
 #yes {
     position: absolute;
     top: 55%;
-    left: 40%;
+    left: 43%;
     transform: translate(-50%, -50%);
     background: #ff2e63;
     color: white;
@@ -64,7 +68,7 @@ button {
 #no {
     position: absolute;
     top: 55%;
-    left: 60%;
+    left: 57%;
     transform: translate(-50%, -50%);
     background: #444;
     color: white;
@@ -108,6 +112,7 @@ video {
 <body>
 
 <div id="bg"></div>
+<div id="bg2"></div>
 <div id="overlay"></div>
 
 <h1 id="question">Vaishuuu....Will you be my Valentine? 💘</h1>
@@ -128,25 +133,39 @@ const backgrounds = [
     "bg6.jpeg","bg7.jpeg","bg8.jpeg","bg9.jpeg","bg10.jpeg","bg11.jpeg"
 ];
 
-// random order
 backgrounds.sort(() => Math.random() - 0.5);
 
-let bgIndex = 0;
-const bg = document.getElementById("bg");
+let bgIndex = 1;
+let showingBg1 = true;
 
-function changeBackground() {
-    bg.style.opacity = 0;
-    setTimeout(() => {
-        bg.style.backgroundImage = `url(${backgrounds[bgIndex]})`;
-        bg.style.opacity = 1;
-        bgIndex = (bgIndex + 1) % backgrounds.length;
-    }, 800);
-}
+const bg = document.getElementById("bg");
+const bg2 = document.getElementById("bg2");
 
 bg.style.backgroundImage = `url(${backgrounds[0]})`;
 bg.style.opacity = 1;
 
-const bgInterval = setInterval(changeBackground, 1000);
+function changeBackground() {
+    const nextImage = backgrounds[bgIndex];
+
+    if (showingBg1) {
+        bg2.style.backgroundImage = `url(${nextImage})`;
+        bg2.style.opacity = 1;
+        bg.style.opacity = 0;
+    } else {
+        bg.style.backgroundImage = `url(${nextImage})`;
+        bg.style.opacity = 1;
+        bg2.style.opacity = 0;
+    }
+
+    showingBg1 = !showingBg1;
+    bgIndex = (bgIndex + 1) % backgrounds.length;
+}
+
+let bgInterval;
+setTimeout(() => {
+    changeBackground();
+    bgInterval = setInterval(changeBackground, 2000);
+}, 2000);
 
 /* ---------- NO BUTTON TELEPORT ---------- */
 const noBtn = document.getElementById("no");
@@ -166,7 +185,6 @@ function teleportNo() {
     noBtn.style.transform = "none";
 }
 
-/* Activate teleport on first try */
 ["mouseenter","touchstart"].forEach(evt => {
     noBtn.addEventListener(evt, () => {
         teleportActivated = true;
@@ -174,7 +192,6 @@ function teleportNo() {
     }, { once: true });
 });
 
-/* Infinite teleport */
 ["mouseenter","mousedown","touchstart"].forEach(evt => {
     noBtn.addEventListener(evt, () => {
         if (teleportActivated) teleportNo();
