@@ -59,7 +59,7 @@ button {
 #yes {
     position: absolute;
     top: 55%;
-    left: 43%;
+    left: 40%;
     transform: translate(-50%, -50%);
     background: #ff2e63;
     color: white;
@@ -68,7 +68,7 @@ button {
 #no {
     position: absolute;
     top: 55%;
-    left: 57%;
+    left: 60%;
     transform: translate(-50%, -50%);
     background: #444;
     color: white;
@@ -164,8 +164,8 @@ function changeBackground() {
 let bgInterval;
 setTimeout(() => {
     changeBackground();
-    bgInterval = setInterval(changeBackground, 2000);
-}, 2000);
+    bgInterval = setInterval(changeBackground, 2500);
+}, 2500);
 
 /* ---------- NO BUTTON TELEPORT ---------- */
 const noBtn = document.getElementById("no");
